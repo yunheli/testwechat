@@ -9,8 +9,8 @@ class WechatsController < ApplicationController
 
   def create
     request = Wechat::Message.from_hash(params[:xml] || post_xml)
-    response = Wechat::ClassMethods.responder_for(request) do |responder, *args|
-      responder ||= Wechat::ClassMethods.responders(:login).first
+    response = self.class.responder_for(request) do |responder, *args|
+      responder ||= self.class.responders(:login).first
 
       next if responder.nil?
       next request.reply.text responder[:respond] if (responder[:respond])
