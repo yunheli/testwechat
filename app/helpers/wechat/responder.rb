@@ -52,6 +52,10 @@ module Wechat
 
       def get_uid params
         request = Wechat::Message.from_hash(params[:xml] || post_xml)
+        def post_xml
+          data = Hash.from_xml(request.raw_post)
+          HashWithIndifferentAccess.new_from_hash_copying_default data.fetch('xml', {})
+        end
         response = self.class.responder_for(request) do |responder, *args|
           responder ||= self.class.responders(:login).first
 
@@ -82,10 +86,7 @@ module Wechat
         end
         return matched[:scoped] || matched[:general] 
       end
-      def post_xml
-        data = Hash.from_xml(request.raw_post)
-        HashWithIndifferentAccess.new_from_hash_copying_default data.fetch('xml', {})
-      end
+
     end
 
     
