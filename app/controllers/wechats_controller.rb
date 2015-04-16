@@ -8,20 +8,14 @@ class WechatsController < ApplicationController
   end
 
   def create
-    request = Wechat::Message.from_hash(params[:xml] || post_xml)
-    response = self.class.responder_for(request) do |responder, *args|
-      responder ||= self.class.responders(:login).first
-
-      next if responder.nil?
-      next request.reply.text responder[:respond] if (responder[:respond])
-      next responder[:proc].call(*args.unshift(request)) if (responder[:proc])
-    end
-
-    if response.respond_to? :to_xml
-      render xml: response.to_xml
-    else
-      render :nothing => true, :status => 200, :content_type => 'text/html'
-    end
+    
+    request = self.class.get_uid(params)
+    puts request
+    # if response.respond_to? :to_xml
+    #   render xml: response.to_xml
+    # else
+    render :nothing => true, :status => 200, :content_type => 'text/html'
+    # end
   end
   # # 默认的文字信息responder
   # on :text do |request, content|

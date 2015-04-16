@@ -50,6 +50,18 @@ module Wechat
         end
       end
 
+      def get_uid params
+        request = Wechat::Message.from_hash(params[:xml] || post_xml)
+        response = self.class.responder_for(request) do |responder, *args|
+          responder ||= self.class.responders(:login).first
+
+          next if responder.nil?
+          next request.reply.text responder[:respond] if (responder[:respond])
+          next responder[:proc].call(*args.unshift(request)) if (responder[:proc])
+        end
+        request
+      end
+
       private 
 
       def match_responders responders, value
@@ -93,6 +105,7 @@ module Wechat
     #     render :nothing => true, :status => 200, :content_type => 'text/html'
     #   end
     # end
+
 
     private
     def verify_signature
