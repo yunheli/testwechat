@@ -82,6 +82,10 @@ module Wechat
         end
         return matched[:scoped] || matched[:general] 
       end
+      def post_xml
+        data = Hash.from_xml(request.raw_post)
+        HashWithIndifferentAccess.new_from_hash_copying_default data.fetch('xml', {})
+      end
     end
 
     
@@ -113,10 +117,5 @@ module Wechat
       render :text => "Forbidden", :status => 403 if params[:signature] != Digest::SHA1.hexdigest(array.join)
     end
 
-    private
-    def post_xml
-      data = Hash.from_xml(request.raw_post)
-      HashWithIndifferentAccess.new_from_hash_copying_default data.fetch('xml', {})
-    end
   end
 end
