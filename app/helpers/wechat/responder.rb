@@ -34,8 +34,7 @@ module Wechat
 
       def responder_for message, &block
         message_type = message[:MsgType].to_sym
-        responders = responders(message_type)
-
+        responders = responders(message_type)      
         case message_type
         when :text
           yield(* match_responders(responders, message[:Content]))
@@ -74,26 +73,26 @@ module Wechat
     end
 
     
-    def show
-      render :text => params[:echostr]
-    end
+    # def show
+    #   render :text => params[:echostr]
+    # end
 
-    def create
-      request = Wechat::Message.from_hash(params[:xml] || post_xml)
-      response = self.class.responder_for(request) do |responder, *args|
-        responder ||= self.class.responders(:fallback).first
+    # def create
+    #   request = Wechat::Message.from_hash(params[:xml] || post_xml)
+    #   response = self.class.responder_for(request) do |responder, *args|
+    #     responder ||= self.class.responders(:fallback).first
 
-        next if responder.nil?
-        next request.reply.text responder[:respond] if (responder[:respond])
-        next responder[:proc].call(*args.unshift(request)) if (responder[:proc])
-      end
+    #     next if responder.nil?
+    #     next request.reply.text responder[:respond] if (responder[:respond])
+    #     next responder[:proc].call(*args.unshift(request)) if (responder[:proc])
+    #   end
 
-      if response.respond_to? :to_xml
-        render xml: response.to_xml
-      else
-        render :nothing => true, :status => 200, :content_type => 'text/html'
-      end
-    end
+    #   if response.respond_to? :to_xml
+    #     render xml: response.to_xml
+    #   else
+    #     render :nothing => true, :status => 200, :content_type => 'text/html'
+    #   end
+    # end
 
     private
     def verify_signature

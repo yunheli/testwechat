@@ -1,6 +1,3 @@
-puts "00000000000"
-
-puts ".............rails"
 module Wechat
   autoload :Message, "wechat/message"
   autoload :Responder, "wechat/responder"
