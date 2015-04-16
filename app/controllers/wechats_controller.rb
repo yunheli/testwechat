@@ -1,5 +1,6 @@
 class WechatsController < ApplicationController
-  include Wechat::Responder
+  
+  wechat_responder
 
 
   # 默认的文字信息responder
