@@ -13,6 +13,10 @@ class WechatsController < ApplicationController
     request = hash.fetch(:request)
     response = hash.fetch(:response)
     puts request.to_json
+    puts request[:ToUserName]
+    puts request[:Event]
+    puts request[:MsgType]
+    puts request[:Ticket]
     if response.respond_to? :to_xml
       render xml: response.to_xml
     else
