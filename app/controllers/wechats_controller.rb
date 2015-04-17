@@ -12,7 +12,7 @@ class WechatsController < ApplicationController
     hash = get_uid(params)
     request = hash.fetch(:request)
     response = hash.fetch(:response)
-    puts request
+    puts request.to_json
     if response.respond_to? :to_xml
       render xml: response.to_xml
     else
