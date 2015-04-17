@@ -50,22 +50,6 @@ module Wechat
         end
       end
 
-      def get_uid params
-        request = Wechat::Message.from_hash(params[:xml] || post_xml)
-        def post_xml
-          data = Hash.from_xml(request.raw_post)
-          HashWithIndifferentAccess.new_from_hash_copying_default data.fetch('xml', {})
-        end
-        response = self.class.responder_for(request) do |responder, *args|
-          responder ||= self.class.responders(:login).first
-
-          next if responder.nil?
-          next request.reply.text responder[:respond] if (responder[:respond])
-          next responder[:proc].call(*args.unshift(request)) if (responder[:proc])
-        end
-        request
-      end
-
       private 
 
       def match_responders responders, value
@@ -86,7 +70,6 @@ module Wechat
         end
         return matched[:scoped] || matched[:general] 
       end
-
     end
 
     
@@ -110,7 +93,18 @@ module Wechat
     #     render :nothing => true, :status => 200, :content_type => 'text/html'
     #   end
     # end
+    
+    def get_uid params
+      request = Wechat::Message.from_hash(params[:xml] || post_xml)
+      response = self.class.responder_for(request) do |responder, *args|
+        responder ||= self.class.responders(:login).first
 
+        next if responder.nil?
+        next request.reply.text responder[:respond] if (responder[:respond])
+        next responder[:proc].call(*args.unshift(request)) if (responder[:proc])
+      end
+      request
+    end
 
     private
     def verify_signature
@@ -118,5 +112,10 @@ module Wechat
       render :text => "Forbidden", :status => 403 if params[:signature] != Digest::SHA1.hexdigest(array.join)
     end
 
+    private
+    def post_xml
+      data = Hash.from_xml(request.raw_post)
+      HashWithIndifferentAccess.new_from_hash_copying_default data.fetch('xml', {})
+    end
   end
 end
