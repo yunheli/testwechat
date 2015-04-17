@@ -9,13 +9,15 @@ class WechatsController < ApplicationController
 
   def create
     
-    request = self.class.get_uid(params)
+    hash = get_uid(params)
+    request = hash.fetch(:request)
+    response = hash.fetch(:response)
     puts request
-    # if response.respond_to? :to_xml
-    #   render xml: response.to_xml
-    # else
-    render :nothing => true, :status => 200, :content_type => 'text/html'
-    # end
+    if response.respond_to? :to_xml
+      render xml: response.to_xml
+    else
+      render :nothing => true, :status => 200, :content_type => 'text/html'
+    end
   end
   # # 默认的文字信息responder
   # on :text do |request, content|

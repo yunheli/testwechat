@@ -103,7 +103,10 @@ module Wechat
         next request.reply.text responder[:respond] if (responder[:respond])
         next responder[:proc].call(*args.unshift(request)) if (responder[:proc])
       end
-      request
+      {
+        request: request,
+        response: response
+      }
     end
 
     private
